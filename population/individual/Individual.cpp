@@ -3,6 +3,8 @@
 namespace NGroupingChallenge {
     Individual::Individual(int numberOfPoints, std::mt19937& randomEngine, std::uniform_int_distribution<>& groupRange)
         : genes(numberOfPoints)
+        , score(-1)
+        , genesEvaluated(false)
     {
         for (int i = 0; i < numberOfPoints; ++i) {
             genes[i] = groupRange(randomEngine);
@@ -13,20 +15,29 @@ namespace NGroupingChallenge {
         return new Individual(*this);
     }
 
-    double Individual::evaluate(AbstractEvaluator& evaluator) const {
-        return evaluator.evaluate(genes);
+    double Individual::evaluate(AbstractEvaluator& evaluator) {
+        if (genesEvaluated) {
+            return score;
+        }
+
+        return reEvaluate(evaluator);
+    }
+
+    double Individual::reEvaluate(AbstractEvaluator& evaluator) {
+        score = evaluator.evaluate(genes);
+        genesEvaluated = true;
+
+        return score;
     }
 
     // Placeholder implementation, override in children classes
-    std::pair<Individual*, Individual*> Individual::cross(const Individual& other, std::mt19937& randomEngine, std::uniform_int_distribution<>& crossAtRange) const {
+    std::pair<Individual*, Individual*> Individual::cross(const Individual& other, std::mt19937& randomEngine, std::uniform_int_distribution<>& crossAtRange, AbstractEvaluator& evaluator) const {
         return {this->copy(), other.copy()};
     }
 
-    Individual* Individual::mutate(MutationStrategy& mutationStrategy) const {
-        Individual* result = this->copy();
-        result->genes = mutationStrategy.mutate(genes);
-
-        return result;
+    void Individual::mutate(MutationStrategy& mutationStrategy) {
+        genes = mutationStrategy.mutate(genes);
+        genesEvaluated = false;
     }
 
     std::string Individual::toString() const {
@@ -45,6 +56,8 @@ namespace NGroupingChallenge {
 
     void Individual::setGenes(const std::vector<int>& genes) {
         this->genes = genes;
+
+        genesEvaluated = false;
     }
 
     std::ostream& operator<<(std::ostream& ostream, const Individual& individual)  {

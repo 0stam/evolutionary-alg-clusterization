@@ -9,7 +9,7 @@
 using namespace NGroupingChallenge;
 
 int disabled_main() {
-    std::random_device randomDevice;
+    /*std::random_device randomDevice;
     std::mt19937 randomEngine(randomDevice());
 
     int numberOfPoints = 10;
@@ -35,7 +35,7 @@ int disabled_main() {
     delete newSecond;
 
     std::vector<int> a(100);
-    std::cout << a.size() << "\n";
+    std::cout << a.size() << "\n";*/
 
     return 0;
 }

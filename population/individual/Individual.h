@@ -16,9 +16,10 @@ public:
 
     virtual Individual* copy() const;
 
-    double evaluate(AbstractEvaluator& evaluator) const;
-    virtual std::pair<Individual*, Individual*> cross(const Individual& other, std::mt19937& randomEngine, std::uniform_int_distribution<>& crossAtRange) const;  // Default implementation, should be changed in subclasses
-    Individual* mutate(MutationStrategy& mutationStrategy) const;
+    double evaluate(AbstractEvaluator& evaluator);
+    double reEvaluate(AbstractEvaluator& evaluator);
+    virtual std::pair<Individual*, Individual*> cross(const Individual& other, std::mt19937& randomEngine, std::uniform_int_distribution<>& crossAtRange, AbstractEvaluator& evaluator) const;  // Default implementation, should be changed in subclasses
+    void mutate(MutationStrategy& mutationStrategy);
 
     const std::vector<int>& getGenes() const;
     void setGenes(const std::vector<int>& genes);
@@ -27,6 +28,9 @@ public:
 
 protected:
     std::vector<int> genes;
+    double score;
+
+    bool genesEvaluated;
 };
 
 std::ostream& operator<<(std::ostream& ostream, const Individual& individual);

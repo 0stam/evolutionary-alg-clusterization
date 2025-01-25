@@ -20,7 +20,7 @@ namespace NGroupingChallenge {
         , crossProbability(CROSS_PROBABILITY)
         , best(nullptr)
         , bestScore(std::numeric_limits<double>::max())
-        , evaluator(*new FixedEvaluator(evaluator))
+        , evaluator(*new ScoreSavingEvalWrapper(*new FixedEvaluator(evaluator)))
         , baseEvaluator(evaluator)
         , groupRange(1, numberOfGroups)
         , crossAtRange(1, numberOfPoints - 1)
@@ -47,6 +47,7 @@ namespace NGroupingChallenge {
             delete (*nextGenPopulation)[i];
         }
 
+        delete &evaluator;
         delete best;
         delete selectionStrategy;
         delete mutationStrategy;
@@ -82,7 +83,7 @@ namespace NGroupingChallenge {
         Individual* newFst;
         Individual* newSnd;
 
-        std::tie(newFst, newSnd) = fst->cross(*snd, randomEngine, crossAtRange);
+        std::tie(newFst, newSnd) = fst->cross(*snd, randomEngine, crossAtRange, evaluator);
 
         if (!passToNextGen(newFst)) {
             return false;
@@ -116,29 +117,15 @@ namespace NGroupingChallenge {
         for (int i = 0; i < mutationCount; ++i) {
             int idx = individualIDRange(randomEngine);
 
-            auto temp = (*nextGenPopulation)[idx];
-            (*nextGenPopulation)[idx] = temp->mutate(*mutationStrategy);
-            delete temp;
+            (*nextGenPopulation)[idx]->mutate(*mutationStrategy);
         }
     }
 
     double PopulationManager::getBestScore() const {
-        return bestScore;
+        return evaluator.getBestScore();
     }
 
     double PopulationManager::updateBestScore() {
-        for (auto individual : *nextGenPopulation) {
-            if (individual == nullptr) break;
-            double currentScore = individual->evaluate(evaluator);
-
-            if (currentScore < bestScore) {
-                delete best;
-                best = individual->copy();
-                bestScore = currentScore;
-            }
-        }
-
-        //std::cout << bestScore << ": " << *best << "\n";
-        return bestScore;
+        return evaluator.getBestScore();
     }
 }

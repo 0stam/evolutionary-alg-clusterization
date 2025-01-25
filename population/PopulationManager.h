@@ -5,6 +5,7 @@
 
 #include "../GroupingEvaluator.h"
 #include "evaluator/AbstractEvaluator.h"
+#include "evaluator/ScoreSavingEvalWrapper.h"
 #include "individual/Individual.h"
 #include "selectionstrategy/SelectionStrategy.h"
 
@@ -45,7 +46,7 @@ namespace NGroupingChallenge {
         Individual* best;
         double bestScore;
 
-        AbstractEvaluator& evaluator;
+        ScoreSavingEvalWrapper& evaluator;
         CGroupingEvaluator& baseEvaluator;
 
         std::mt19937 randomEngine;

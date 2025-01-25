@@ -11,9 +11,10 @@ class AbstractEvaluator {
 public:
     virtual ~AbstractEvaluator() = default;
 
+    virtual AbstractEvaluator& copy() = 0;
+
     virtual double evaluate(std::vector<int> solution) = 0;
-    virtual double reEvaluate(std::vector<int> solution, int changeIdx, int prevVal) = 0;
-    virtual double distanceBetween(int fstPointIdx, int sndPointIdx) = 0;
+    virtual double calcDiff(std::vector<int> solution, double prevScore, int changeIdx, int prevVal) = 0;
 };
 
 

@@ -21,7 +21,7 @@ void COptimizer::vInitialize()
 	v_current_best.clear();
 	v_current_best.resize(c_evaluator.iGetNumberOfPoints());*/
 
-	populationManager = new PopulationManager(c_evaluator, c_evaluator.iGetNumberOfPoints(), c_evaluator.iGetUpperBound(), 100);
+	populationManager = new PopulationManager(c_evaluator, c_evaluator.iGetNumberOfPoints(), c_evaluator.iGetUpperBound(), 200);
 }
 
 void COptimizer::vRunIteration()

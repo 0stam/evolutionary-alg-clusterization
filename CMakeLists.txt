@@ -30,4 +30,6 @@ add_executable(project main.cpp
         population/evaluator/FixedEvaluator.cpp
         population/evaluator/FixedEvaluator.h
         population/evaluator/AbstractEvaluator.cpp
-        population/evaluator/AbstractEvaluator.h)
+        population/evaluator/AbstractEvaluator.h
+        population/evaluator/ScoreSavingEvalWrapper.cpp
+        population/evaluator/ScoreSavingEvalWrapper.h)

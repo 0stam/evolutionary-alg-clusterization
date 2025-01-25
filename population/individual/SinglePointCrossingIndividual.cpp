@@ -15,7 +15,7 @@ namespace NGroupingChallenge {
         return new SinglePointCrossingIndividual(*this);
     }
 
-    std::pair<Individual*, Individual*> SinglePointCrossingIndividual::cross(const Individual& other, std::mt19937& randomEngine, std::uniform_int_distribution<>& crossAtRange) const {
+    std::pair<Individual*, Individual*> SinglePointCrossingIndividual::cross(const Individual& other, std::mt19937& randomEngine, std::uniform_int_distribution<>& crossAtRange, AbstractEvaluator& evaluator) const {
         // TODO: it can be optimized a lot when genes are public
         // New individuals
         Individual* first = this->copy();
