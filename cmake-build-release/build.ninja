@@ -145,6 +145,18 @@ build CMakeFiles/project.dir/population/evaluator/ScoreSavingEvalWrapper.cpp.o: 
   OBJECT_DIR = CMakeFiles/project.dir
   OBJECT_FILE_DIR = CMakeFiles/project.dir/population/evaluator
 
+build CMakeFiles/project.dir/population/threads/ThreadPool.cpp.o: CXX_COMPILER__project_unscanned_Release /home/rs/CLionProjects/project/population/threads/ThreadPool.cpp || cmake_object_order_depends_target_project
+  DEP_FILE = CMakeFiles/project.dir/population/threads/ThreadPool.cpp.o.d
+  FLAGS = -O3 -DNDEBUG -std=gnu++14 -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles/project.dir
+  OBJECT_FILE_DIR = CMakeFiles/project.dir/population/threads
+
+build CMakeFiles/project.dir/population/threads/ThreadContext.cpp.o: CXX_COMPILER__project_unscanned_Release /home/rs/CLionProjects/project/population/threads/ThreadContext.cpp || cmake_object_order_depends_target_project
+  DEP_FILE = CMakeFiles/project.dir/population/threads/ThreadContext.cpp.o.d
+  FLAGS = -O3 -DNDEBUG -std=gnu++14 -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles/project.dir
+  OBJECT_FILE_DIR = CMakeFiles/project.dir/population/threads
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target project
@@ -153,7 +165,7 @@ build CMakeFiles/project.dir/population/evaluator/ScoreSavingEvalWrapper.cpp.o: 
 #############################################
 # Link the executable project
 
-build project: CXX_EXECUTABLE_LINKER__project_Release CMakeFiles/project.dir/main.cpp.o CMakeFiles/project.dir/GaussianGroupingEvaluatorFactory.cpp.o CMakeFiles/project.dir/GroupingChallenge.cpp.o CMakeFiles/project.dir/GroupingEvaluator.cpp.o CMakeFiles/project.dir/Optimizer.cpp.o CMakeFiles/project.dir/Point.cpp.o CMakeFiles/project.dir/population/PopulationManager.cpp.o CMakeFiles/project.dir/population/individual/Individual.cpp.o CMakeFiles/project.dir/population/mutationstrategy/MutationStrategy.cpp.o CMakeFiles/project.dir/population/individual/SinglePointCrossingIndividual.cpp.o CMakeFiles/project.dir/population/mutationstrategy/RandomGeneMutationStrategy.cpp.o CMakeFiles/project.dir/population/selectionstrategy/SelectionStrategy.cpp.o CMakeFiles/project.dir/population/selectionstrategy/TournamentSelectionStrategy.cpp.o CMakeFiles/project.dir/population/evaluator/FixedEvaluator.cpp.o CMakeFiles/project.dir/population/evaluator/AbstractEvaluator.cpp.o CMakeFiles/project.dir/population/evaluator/ScoreSavingEvalWrapper.cpp.o
+build project: CXX_EXECUTABLE_LINKER__project_Release CMakeFiles/project.dir/main.cpp.o CMakeFiles/project.dir/GaussianGroupingEvaluatorFactory.cpp.o CMakeFiles/project.dir/GroupingChallenge.cpp.o CMakeFiles/project.dir/GroupingEvaluator.cpp.o CMakeFiles/project.dir/Optimizer.cpp.o CMakeFiles/project.dir/Point.cpp.o CMakeFiles/project.dir/population/PopulationManager.cpp.o CMakeFiles/project.dir/population/individual/Individual.cpp.o CMakeFiles/project.dir/population/mutationstrategy/MutationStrategy.cpp.o CMakeFiles/project.dir/population/individual/SinglePointCrossingIndividual.cpp.o CMakeFiles/project.dir/population/mutationstrategy/RandomGeneMutationStrategy.cpp.o CMakeFiles/project.dir/population/selectionstrategy/SelectionStrategy.cpp.o CMakeFiles/project.dir/population/selectionstrategy/TournamentSelectionStrategy.cpp.o CMakeFiles/project.dir/population/evaluator/FixedEvaluator.cpp.o CMakeFiles/project.dir/population/evaluator/AbstractEvaluator.cpp.o CMakeFiles/project.dir/population/evaluator/ScoreSavingEvalWrapper.cpp.o CMakeFiles/project.dir/population/threads/ThreadPool.cpp.o CMakeFiles/project.dir/population/threads/ThreadContext.cpp.o
   FLAGS = -O3 -DNDEBUG
   OBJECT_DIR = CMakeFiles/project.dir
   POST_BUILD = :

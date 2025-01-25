@@ -13,6 +13,7 @@ namespace NGroupingChallenge {
     const int PopulationManager::TOURNAMENT_CANDIDATES = 2;
     const double PopulationManager::CROSS_PROBABILITY = 0.7;
     const double PopulationManager::MUTATION_PROBABILITY = 0.05;
+    const int PopulationManager::THREAD_COUNT = 2;
 
     PopulationManager::PopulationManager(CGroupingEvaluator& evaluator, int numberOfPoints, int numberOfGroups, int populationSize)
         : population(new std::vector<Individual*>(populationSize))

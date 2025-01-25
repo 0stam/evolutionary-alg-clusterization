@@ -16,6 +16,7 @@ namespace NGroupingChallenge {
         static const int TOURNAMENT_CANDIDATES;
         static const double CROSS_PROBABILITY;
         static const double MUTATION_PROBABILITY;
+        static const int THREAD_COUNT;
 
         PopulationManager(CGroupingEvaluator& evaluator, int numberOfPoints, int numberOfGroups, int populationSize);
         ~PopulationManager();
@@ -64,6 +65,16 @@ namespace NGroupingChallenge {
 
         SelectionStrategy* selectionStrategy;
         MutationStrategy* mutationStrategy;
+    };
+
+    class PopulationThreadContext {
+    public:
+        std::mt19937 randomEngine;
+        std::uniform_int_distribution<> groupRange;
+        std::uniform_int_distribution<> crossAtRange;
+        std::uniform_int_distribution<> pointIdxRange;
+        std::uniform_int_distribution<> individualIDRange;
+        std::uniform_real_distribution<> zeroToOneRange;
     };
 }
 
