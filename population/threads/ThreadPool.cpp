@@ -6,6 +6,7 @@
 namespace NGroupingChallenge {
     ThreadPool::ThreadPool(size_t num_threads)
         : stop(false)
+        , jobsRunning(0)
     {
         for (size_t i = 0; i < num_threads; ++i) {
             threads.emplace_back([this] {
@@ -66,11 +67,7 @@ namespace NGroupingChallenge {
     }
 
     void ThreadPool::join() {
-        std::cout << "Joining" << std::endl;
-
         std::unique_lock<std::mutex> lock(queueMutex);
         cv.wait(lock, [this] { return tasks.empty() && jobsRunning == 0; });
-
-        std::cout << "Joined" << std::endl;
     }
 } // NGroupingChallenge

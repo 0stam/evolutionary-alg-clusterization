@@ -1,5 +1,7 @@
 #include "Individual.h"
 
+#include <iostream>
+
 namespace NGroupingChallenge {
     Individual::Individual(int numberOfPoints, std::mt19937& randomEngine, std::uniform_int_distribution<>& groupRange)
         : genes(numberOfPoints)

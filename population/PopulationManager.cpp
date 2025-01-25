@@ -26,6 +26,7 @@ namespace NGroupingChallenge {
             , pointIdxRange(pointIdxRange)
             , individualIDRange(individualIDRange)
             , individualThreadIDRange(startWriteIdx, endWriteIdx - 1)
+            , zeroToOneRange(zeroToOneRange)
             , selectionStrategy(new TournamentSelectionStrategy(this->randomEngine, this->individualIDRange, evaluator, PopulationManager::TOURNAMENT_CANDIDATES))
             , mutationStrategy(new RandomGeneMutationStrategy(this->randomEngine, this->groupRange, this->pointIdxRange))
     {
@@ -45,7 +46,7 @@ namespace NGroupingChallenge {
         , mutationProbability(MUTATION_PROBABILITY)
         , best(nullptr)
         , bestScore(std::numeric_limits<double>::max())
-        , evaluator(*new ScoreSavingEvalWrapper(*new FixedEvaluator(evaluator)))
+        , evaluator(*new FixedEvaluator(evaluator))
         , baseEvaluator(evaluator)
         , threadCount(THREAD_COUNT)
         , threadPool(THREAD_COUNT)
@@ -91,7 +92,7 @@ namespace NGroupingChallenge {
             int startIdx = i * chunkSize;
             int endIdx = startIdx + chunkSize;
 
-            std::cout << startIdx << ", " << endIdx << "\n";
+            //std::cout << startIdx << ", " << endIdx << "\n";
 
             if (i == threadCount - 1) {
                 endIdx = populationSize;
@@ -108,9 +109,11 @@ namespace NGroupingChallenge {
 
         threadPool.join();
 
-        std::cout << "Iteration finished" << "\n";
+        //std::cout << "Iteration finished" << "\n";
 
         std::swap(population, nextGenPopulation);
+
+        updateBestScore();
 
         nextWriteIdx = 0;
     }
@@ -123,11 +126,11 @@ namespace NGroupingChallenge {
 
         tc.nextWriteIdx = tc.startWriteIdx;
 
-        std::cout << "Thread finished" << std::endl;
+        //std::cout << "Thread finished" << std::endl;
     }
 
     bool PopulationManager::nextAction(PopulationThreadContext& tc) {
-        std::cout << tc.nextWriteIdx << "\n";
+        //std::cout << tc.nextWriteIdx << "\n";
 
         Individual* fst = tc.selectionStrategy->select(*population);
         Individual* snd = tc.selectionStrategy->select(*population);
@@ -171,7 +174,7 @@ namespace NGroupingChallenge {
     }
 
     void PopulationManager::mutate(PopulationThreadContext& tc) {
-        std::cout << tc.nextWriteIdx << "\n";
+        //std::cout << tc.nextWriteIdx << "\n";
         int mutationCount = std::ceil(mutationProbability * numberOfPoints * populationSize / threadCount);
 
         for (int i = 0; i < mutationCount; ++i) {
@@ -182,10 +185,19 @@ namespace NGroupingChallenge {
     }
 
     double PopulationManager::getBestScore() const {
-        return evaluator.getBestScore();
+        return bestScore;
     }
 
     double PopulationManager::updateBestScore() {
-        return evaluator.getBestScore();
+        for (auto individual : *population) {
+            double score = individual->evaluate(evaluator);
+
+            if (score < bestScore) {
+                best = individual->copy();
+                bestScore = score;
+            }
+        }
+
+        return bestScore;
     }
 }

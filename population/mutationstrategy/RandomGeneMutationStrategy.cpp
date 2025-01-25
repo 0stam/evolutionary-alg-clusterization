@@ -4,6 +4,8 @@
 
 #include "RandomGeneMutationStrategy.h"
 
+#include <iostream>
+
 namespace NGroupingChallenge {
     RandomGeneMutationStrategy::RandomGeneMutationStrategy(std::mt19937& randomEngine, std::uniform_int_distribution<>& groupRange, std::uniform_int_distribution<>& pointIdxRange)
         : randomEngine(randomEngine)

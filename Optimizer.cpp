@@ -47,5 +47,5 @@ void COptimizer::vRunIteration()
 
 	populationManager->iteration();
 
-	std::cout << populationManager->getBestScore() << "\n";
+	std::cout << populationManager->getBestScore() << std::endl;
 }

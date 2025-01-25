@@ -74,7 +74,7 @@ namespace NGroupingChallenge {
         Individual* best;
         double bestScore;
 
-        ScoreSavingEvalWrapper& evaluator;
+        AbstractEvaluator& evaluator;
         CGroupingEvaluator& baseEvaluator;
 
         int threadCount;
