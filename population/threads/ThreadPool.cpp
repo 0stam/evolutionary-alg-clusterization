@@ -1,5 +1,8 @@
 #include "ThreadPool.h"
 
+#include <iostream>
+#include <ostream>
+
 namespace NGroupingChallenge {
     ThreadPool::ThreadPool(size_t num_threads)
         : stop(false)
@@ -23,9 +26,19 @@ namespace NGroupingChallenge {
 
                         task = std::move(tasks.front());
                         tasks.pop();
+                        jobsRunning++;
+
+                        cv.notify_all();
                     }
 
                     task();
+
+                        {
+                            std::unique_lock<std::mutex> lock(
+                                queueMutex);
+                            jobsRunning--;
+                            cv.notify_all();
+                        }
                 }
             });
         }
@@ -50,5 +63,14 @@ namespace NGroupingChallenge {
             tasks.emplace(move(task));
         }
         cv.notify_one();
+    }
+
+    void ThreadPool::join() {
+        std::cout << "Joining" << std::endl;
+
+        std::unique_lock<std::mutex> lock(queueMutex);
+        cv.wait(lock, [this] { return tasks.empty() && jobsRunning == 0; });
+
+        std::cout << "Joined" << std::endl;
     }
 } // NGroupingChallenge

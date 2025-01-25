@@ -15,6 +15,7 @@ public:
     ~ThreadPool();
 
     void enqueue(std::function<void()> task);
+    void join();
 
 private:
     std::vector<std::thread> threads;
@@ -23,6 +24,7 @@ private:
     std::mutex queueMutex;
     std::condition_variable cv;
 
+    int jobsRunning;
     bool stop;
 };
 

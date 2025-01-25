@@ -1,6 +1,7 @@
 #ifndef MUTATIONSTRATEGY_H
 #define MUTATIONSTRATEGY_H
 #include <vector>
+#include <string>
 
 namespace NGroupingChallenge {
 
@@ -9,6 +10,8 @@ public:
     virtual ~MutationStrategy() = default;
 
     virtual std::vector<int> mutate(std::vector<int> genes) = 0;
+
+    virtual std::string test() { return "test"; };
 };
 
 } // NGroupingChallenge

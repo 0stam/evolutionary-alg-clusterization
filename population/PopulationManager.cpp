@@ -10,19 +10,46 @@
 #include "selectionstrategy/TournamentSelectionStrategy.h"
 
 namespace NGroupingChallenge {
-    const int PopulationManager::TOURNAMENT_CANDIDATES = 2;
+    const int PopulationManager::TOURNAMENT_CANDIDATES = 1;
     const double PopulationManager::CROSS_PROBABILITY = 0.7;
     const double PopulationManager::MUTATION_PROBABILITY = 0.05;
-    const int PopulationManager::THREAD_COUNT = 2;
+    const int PopulationManager::THREAD_COUNT = 1;
+
+    PopulationThreadContext::PopulationThreadContext(int startWriteIdx, int endWriteIdx, std::uniform_int_distribution<>& groupRange,
+        std::uniform_int_distribution<>& crossAtRange, std::uniform_int_distribution<>& pointIdxRange,
+        std::uniform_int_distribution<>& individualIDRange, std::uniform_real_distribution<>& zeroToOneRange, AbstractEvaluator& evaluator)
+            : nextWriteIdx(startWriteIdx)
+            , startWriteIdx(startWriteIdx)
+            , endWriteIdx(endWriteIdx)
+            , groupRange(groupRange)
+            , crossAtRange(crossAtRange)
+            , pointIdxRange(pointIdxRange)
+            , individualIDRange(individualIDRange)
+            , individualThreadIDRange(startWriteIdx, endWriteIdx - 1)
+            , selectionStrategy(new TournamentSelectionStrategy(this->randomEngine, this->individualIDRange, evaluator, PopulationManager::TOURNAMENT_CANDIDATES))
+            , mutationStrategy(new RandomGeneMutationStrategy(this->randomEngine, this->groupRange, this->pointIdxRange))
+    {
+        std::random_device rd;
+        randomEngine.seed(rd());
+    }
+
+    PopulationThreadContext::~PopulationThreadContext() {
+        delete selectionStrategy;
+        delete mutationStrategy;
+    }
 
     PopulationManager::PopulationManager(CGroupingEvaluator& evaluator, int numberOfPoints, int numberOfGroups, int populationSize)
         : population(new std::vector<Individual*>(populationSize))
         , nextGenPopulation(new std::vector<Individual*>(populationSize, nullptr))
         , crossProbability(CROSS_PROBABILITY)
+        , mutationProbability(MUTATION_PROBABILITY)
         , best(nullptr)
         , bestScore(std::numeric_limits<double>::max())
         , evaluator(*new ScoreSavingEvalWrapper(*new FixedEvaluator(evaluator)))
         , baseEvaluator(evaluator)
+        , threadCount(THREAD_COUNT)
+        , threadPool(THREAD_COUNT)
+        , threadContexts(THREAD_COUNT)
         , groupRange(1, numberOfGroups)
         , crossAtRange(1, numberOfPoints - 1)
         , pointIdxRange(0, numberOfPoints - 1)
@@ -32,13 +59,12 @@ namespace NGroupingChallenge {
         , numberOfGroups(numberOfGroups)
         , populationSize(populationSize)
         , nextWriteIdx(0)
-        , selectionStrategy(new TournamentSelectionStrategy(randomEngine, individualIDRange, this->evaluator, TOURNAMENT_CANDIDATES))
-        , mutationStrategy(new RandomGeneMutationStrategy(randomEngine, groupRange, pointIdxRange))
     {
         std::random_device rd;
         randomEngine.seed(rd());
 
         initPopulation();
+        initThreadContexts();
     }
 
 
@@ -50,8 +76,6 @@ namespace NGroupingChallenge {
 
         delete &evaluator;
         delete best;
-        delete selectionStrategy;
-        delete mutationStrategy;
     }
 
     void PopulationManager::initPopulation() {
@@ -60,65 +84,100 @@ namespace NGroupingChallenge {
         }
     }
 
+    void PopulationManager::initThreadContexts() {
+        int chunkSize = populationSize / threadCount;
+
+        for (int i = 0; i < threadCount; ++i) {
+            int startIdx = i * chunkSize;
+            int endIdx = startIdx + chunkSize;
+
+            std::cout << startIdx << ", " << endIdx << "\n";
+
+            if (i == threadCount - 1) {
+                endIdx = populationSize;
+            }
+
+            threadContexts[i] = new PopulationThreadContext(startIdx, endIdx, groupRange, crossAtRange, pointIdxRange, individualIDRange, zeroToOneRange, evaluator);
+        }
+    }
+
     void PopulationManager::iteration() {
-        while (nextAction()) {}
-        mutate();
+        for (auto context : threadContexts) {
+            threadPool.enqueue([this, context] { threadIteration(*context); });
+        }
+
+        threadPool.join();
+
+        std::cout << "Iteration finished" << "\n";
 
         std::swap(population, nextGenPopulation);
 
         nextWriteIdx = 0;
     }
 
-    bool PopulationManager::nextAction() {
-        Individual* fst = selectionStrategy->select(*population);
-        Individual* snd = selectionStrategy->select(*population);
+    void PopulationManager::threadIteration(PopulationThreadContext& tc) {
+        while (nextAction(tc)) {}
 
-        if (zeroToOneRange(randomEngine) < crossProbability) {
-            return crossover(fst, snd);
-        }
+        tc.nextWriteIdx = tc.startWriteIdx;
+        mutate(tc);
 
-        return passForward(fst, snd);
+        tc.nextWriteIdx = tc.startWriteIdx;
+
+        std::cout << "Thread finished" << std::endl;
     }
 
-    bool PopulationManager::crossover(Individual* fst, Individual* snd) {
+    bool PopulationManager::nextAction(PopulationThreadContext& tc) {
+        std::cout << tc.nextWriteIdx << "\n";
+
+        Individual* fst = tc.selectionStrategy->select(*population);
+        Individual* snd = tc.selectionStrategy->select(*population);
+
+        if (tc.zeroToOneRange(randomEngine) < crossProbability) {
+            return crossover(fst, snd, tc);
+        }
+
+        return passForward(fst, snd, tc);
+    }
+
+    bool PopulationManager::crossover(Individual* fst, Individual* snd, PopulationThreadContext& tc) {
         Individual* newFst;
         Individual* newSnd;
 
-        std::tie(newFst, newSnd) = fst->cross(*snd, randomEngine, crossAtRange, evaluator);
+        std::tie(newFst, newSnd) = fst->cross(*snd, tc.randomEngine, tc.crossAtRange, evaluator);
 
-        if (!passToNextGen(newFst)) {
+        if (!passToNextGen(newFst, tc)) {
             return false;
         }
 
-        return passToNextGen(newSnd);
+        return passToNextGen(newSnd, tc);
     }
 
-    bool PopulationManager::passForward(Individual* fst, Individual* snd) {
-        if (!passToNextGen(fst->copy())) {
+    bool PopulationManager::passForward(Individual* fst, Individual* snd, PopulationThreadContext& tc) {
+        if (!passToNextGen(fst->copy(), tc)) {
             return false;
         }
 
-        return passToNextGen(snd->copy());
+        return passToNextGen(snd->copy(), tc);
     }
 
-    bool PopulationManager::passToNextGen(Individual* individual) {
-        delete (*nextGenPopulation)[nextWriteIdx];
+    bool PopulationManager::passToNextGen(Individual* individual, PopulationThreadContext& tc) {
+        delete (*nextGenPopulation)[tc.nextWriteIdx];
 
-        (*nextGenPopulation)[nextWriteIdx] = individual;
+        (*nextGenPopulation)[tc.nextWriteIdx] = individual;
 
         updateBestScore();
 
-        return ++nextWriteIdx < populationSize;
+        return ++tc.nextWriteIdx < tc.endWriteIdx;
     }
 
-    void PopulationManager::mutate() {
-        binomial_distribution<> a;
-        int mutationCount = std::ceil(mutationProbability * numberOfPoints * populationSize);
+    void PopulationManager::mutate(PopulationThreadContext& tc) {
+        std::cout << tc.nextWriteIdx << "\n";
+        int mutationCount = std::ceil(mutationProbability * numberOfPoints * populationSize / threadCount);
 
         for (int i = 0; i < mutationCount; ++i) {
-            int idx = individualIDRange(randomEngine);
+            int idx = tc.individualThreadIDRange(tc.randomEngine);
 
-            (*nextGenPopulation)[idx]->mutate(*mutationStrategy);
+            (*nextGenPopulation)[idx]->mutate(*tc.mutationStrategy);
         }
     }
 

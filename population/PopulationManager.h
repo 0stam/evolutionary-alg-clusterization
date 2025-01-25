@@ -4,13 +4,38 @@
 #include <vector>
 
 #include "../GroupingEvaluator.h"
-#include "evaluator/AbstractEvaluator.h"
 #include "evaluator/ScoreSavingEvalWrapper.h"
 #include "individual/Individual.h"
 #include "selectionstrategy/SelectionStrategy.h"
+#include "threads/ThreadPool.h"
 
 
 namespace NGroupingChallenge {
+
+    class PopulationThreadContext {
+    public:
+        PopulationThreadContext(int startWriteIdx, int endWriteIdx, std::uniform_int_distribution<>& groupRange, std::uniform_int_distribution<>& crossAtRange,
+            std::uniform_int_distribution<>& pointIdxRange, std::uniform_int_distribution<>& individualIDRange, std::uniform_real_distribution<>& zeroToOneRange,
+            AbstractEvaluator& evaluator);
+
+        ~PopulationThreadContext();
+
+        int nextWriteIdx;
+        int startWriteIdx; // Inclusive
+        int endWriteIdx; // Exclusive
+        std::mt19937 randomEngine;
+        std::uniform_int_distribution<> groupRange;
+        std::uniform_int_distribution<> crossAtRange;
+        std::uniform_int_distribution<> pointIdxRange;
+        std::uniform_int_distribution<> individualIDRange;
+        std::uniform_int_distribution<> individualThreadIDRange;
+        std::uniform_real_distribution<> zeroToOneRange;
+
+        SelectionStrategy* selectionStrategy;
+        MutationStrategy* mutationStrategy;
+    };
+
+
     class PopulationManager {
     public:
         static const int TOURNAMENT_CANDIDATES;
@@ -22,17 +47,19 @@ namespace NGroupingChallenge {
         ~PopulationManager();
 
         void initPopulation();
+        void initThreadContexts();
 
         void iteration();
+        void threadIteration(PopulationThreadContext& tc);
 
-        bool nextAction();
+        bool nextAction(PopulationThreadContext& tc);
 
-        bool crossover(Individual* fst, Individual* snd);
-        bool passForward(Individual* fst, Individual* snd);
+        bool crossover(Individual* fst, Individual* snd, PopulationThreadContext& tc);
+        bool passForward(Individual* fst, Individual* snd, PopulationThreadContext& tc);
 
-        bool passToNextGen(Individual* individual);
+        bool passToNextGen(Individual* individual, PopulationThreadContext& tc);
 
-        void mutate();
+        void mutate(PopulationThreadContext& tc);
 
         double getBestScore() const;
         double updateBestScore();
@@ -50,6 +77,10 @@ namespace NGroupingChallenge {
         ScoreSavingEvalWrapper& evaluator;
         CGroupingEvaluator& baseEvaluator;
 
+        int threadCount;
+        ThreadPool threadPool;
+        std::vector<PopulationThreadContext*> threadContexts;
+
         std::mt19937 randomEngine;
         std::uniform_int_distribution<> groupRange;
         std::uniform_int_distribution<> crossAtRange;
@@ -62,19 +93,6 @@ namespace NGroupingChallenge {
         int populationSize;
 
         int nextWriteIdx;
-
-        SelectionStrategy* selectionStrategy;
-        MutationStrategy* mutationStrategy;
-    };
-
-    class PopulationThreadContext {
-    public:
-        std::mt19937 randomEngine;
-        std::uniform_int_distribution<> groupRange;
-        std::uniform_int_distribution<> crossAtRange;
-        std::uniform_int_distribution<> pointIdxRange;
-        std::uniform_int_distribution<> individualIDRange;
-        std::uniform_real_distribution<> zeroToOneRange;
     };
 }
 
