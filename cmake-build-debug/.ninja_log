@@ -1,0 +1,16 @@
+# ninja log v6
+1	670	1736642154652359545	CMakeFiles/project.dir/solutionsmanager/SolutionsManager.cpp.o	9b27fb65dda622fe
+5	731	1737756914069150582	CMakeFiles/project.dir/population/selectionstrategy/TournamentSelectionStrategy.cpp.o	35314c6e63166423
+4	151	1737716467989095647	CMakeFiles/project.dir/population/mutationstrategy/MutationStrategy.cpp.o	f9e55f4fce239b47
+3	808	1737755424051306989	CMakeFiles/project.dir/population/individual/SinglePointCrossingIndividual.cpp.o	f19e36294d1e5dc2
+808	1503	1737755424855315921	CMakeFiles/project.dir/population/selectionstrategy/SelectionStrategy.cpp.o	b74250ad28f10034
+4	913	1737756914068150571	CMakeFiles/project.dir/population/PopulationManager.cpp.o	58a6ca5a386e0c68
+3	854	1737755424050306978	CMakeFiles/project.dir/population/individual/Individual.cpp.o	abc5fae77bef76fd
+2	1097	1737755424049306967	CMakeFiles/project.dir/main.cpp.o	51f8d0fefccf638c
+4	466	1736621605106276851	CMakeFiles/project.dir/Point.cpp.o	dc85c9ff55dd54d6
+676	808	1737757126587563849	project	83f31b0aa539b8ab
+4	676	1737757125915556218	CMakeFiles/project.dir/Optimizer.cpp.o	43800274468c0f3b
+1	527	1736621605103276820	CMakeFiles/project.dir/GroupingEvaluator.cpp.o	f323bbb3d27ab3a0
+1	1040	1736621605103276820	CMakeFiles/project.dir/GaussianGroupingEvaluatorFactory.cpp.o	90e87314d1f8dc54
+2	727	1737757051073706346	CMakeFiles/project.dir/GroupingChallenge.cpp.o	a27ca8664638267d
+4	491	1737716467989095647	CMakeFiles/project.dir/population/mutationstrategy/RandomGeneMutationStrategy.cpp.o	c43a76845e5cb907
