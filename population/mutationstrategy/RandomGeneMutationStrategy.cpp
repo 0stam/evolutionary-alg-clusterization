@@ -18,4 +18,19 @@ namespace NGroupingChallenge {
 
         return genes;
     }
+
+    std::pair<int, int> RandomGeneMutationStrategy::modify(std::vector<int>& genes) {
+        int modificationIdx = pointIdxRange(randomEngine);
+
+        int oldVal = genes[modificationIdx];
+        int newVal;
+
+        do {
+            newVal = groupRange(randomEngine);
+        } while (newVal == oldVal);
+
+        genes[modificationIdx] = newVal;
+
+        return {modificationIdx, oldVal};
+    }
 } // NGroupingChallenge

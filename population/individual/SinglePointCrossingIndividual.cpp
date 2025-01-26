@@ -23,8 +23,8 @@ namespace NGroupingChallenge {
 
         auto& thisGenes = genes;
         auto& otherGenes = other.getGenes();
-        auto& firstGenes = *new vector<int>(thisGenes);
-        auto& secondGenes = *new vector<int>(otherGenes);
+        auto firstGenes(thisGenes);
+        auto secondGenes(otherGenes);
 
         int crossIdx = crossAtRange(randomEngine);
 

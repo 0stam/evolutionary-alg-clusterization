@@ -23,7 +23,10 @@ void COptimizer::vInitialize()
 	v_current_best.clear();
 	v_current_best.resize(c_evaluator.iGetNumberOfPoints());*/
 
-	populationManager = new PopulationManager(c_evaluator, c_evaluator.iGetNumberOfPoints(), c_evaluator.iGetUpperBound(), 100);
+	populationManager = new PopulationManager(c_evaluator, c_evaluator.iGetNumberOfPoints(), c_evaluator.iGetUpperBound());
+
+	v_current_best = populationManager->getBest();
+	d_current_best_fitness = populationManager->getBestScore();
 }
 
 void COptimizer::vRunIteration()
@@ -48,6 +51,8 @@ void COptimizer::vRunIteration()
 	cout << d_current_best_fitness << endl;*/
 
 	populationManager->iteration();
+	v_current_best = populationManager->getBest();
+	d_current_best_fitness = populationManager->getBestScore();
 
 	std::cout << std::setprecision(15) << populationManager->getBestScore() << "\n";
 }

@@ -5,15 +5,18 @@
 #include <iostream>
 
 #include "evaluator/FixedEvaluator.h"
+#include "exampleloader/CClusterSaver.h"
 #include "individual/SinglePointCrossingIndividual.h"
 #include "mutationstrategy/RandomGeneMutationStrategy.h"
 #include "selectionstrategy/TournamentSelectionStrategy.h"
 
 namespace NGroupingChallenge {
+    const int PopulationManager::POPULATION_SIZE = 16;
     const int PopulationManager::TOURNAMENT_CANDIDATES = 1;
     const double PopulationManager::CROSS_PROBABILITY = 0.8;
-    const double PopulationManager::MUTATION_PROBABILITY = 0.1;
+    const double PopulationManager::MUTATION_PROBABILITY = 0.05;
     const int PopulationManager::THREAD_COUNT = 8;
+    const int PopulationManager::PREPROCESS_ITERATIONS = 100;
 
     PopulationThreadContext::PopulationThreadContext(int startWriteIdx, int endWriteIdx, std::uniform_int_distribution<>& groupRange,
         std::uniform_int_distribution<>& crossAtRange, std::uniform_int_distribution<>& pointIdxRange,
@@ -46,6 +49,7 @@ namespace NGroupingChallenge {
         , mutationProbability(MUTATION_PROBABILITY)
         , best(nullptr)
         , bestScore(std::numeric_limits<double>::max())
+        , preprocessing(true)
         , evaluator(*new FixedEvaluator(evaluator))
         , baseEvaluator(evaluator)
         , threadCount(THREAD_COUNT)
@@ -66,6 +70,8 @@ namespace NGroupingChallenge {
 
         initPopulation();
         initThreadContexts();
+
+        updateBestScore();
     }
 
 
@@ -73,6 +79,13 @@ namespace NGroupingChallenge {
         for (int i = 0; i < populationSize; ++i) {
             delete (*population)[i];
             delete (*nextGenPopulation)[i];
+        }
+
+        delete population;
+        delete nextGenPopulation;
+
+        for (auto context : threadContexts) {
+            delete context;
         }
 
         delete &evaluator;
@@ -102,7 +115,7 @@ namespace NGroupingChallenge {
         }
     }
 
-    void PopulationManager::iteration() {
+    void PopulationManager::geneticIteration() {
         for (auto context : threadContexts) {
             threadPool.enqueue([this, context] { threadIteration(*context); });
         }
@@ -116,6 +129,42 @@ namespace NGroupingChallenge {
         updateBestScore();
 
         nextWriteIdx = 0;
+
+    }
+
+
+
+    void PopulationManager::preprocessIteration() {
+        double previousBestScore = bestScore;
+
+        for (auto context : threadContexts) {
+            threadPool.enqueue([this, context] { threadPreprocess(PREPROCESS_ITERATIONS, *context); });
+        }
+
+        threadPool.join();
+
+        updateBestScore();
+
+        if (bestScore >= previousBestScore) {
+            preprocessing = false;
+            std::cout << "\n\n\nPreprocessing finished\n\n\n" << std::endl;
+        }
+    }
+
+    void PopulationManager::threadPreprocess(int iterations, PopulationThreadContext& tc) {
+        for (int i = tc.startWriteIdx; i < tc.endWriteIdx; ++i) {
+            (*population)[i]->optimize(*tc.mutationStrategy, evaluator, iterations);
+        }
+
+        //reEvaluateCurrent(tc);
+    }
+
+    void PopulationManager::iteration() {
+        if (preprocessing) {
+            preprocessIteration();
+        } else {
+            geneticIteration();
+        }
     }
 
     void PopulationManager::threadIteration(PopulationThreadContext& tc) {
@@ -124,7 +173,7 @@ namespace NGroupingChallenge {
         tc.nextWriteIdx = tc.startWriteIdx;
         mutate(tc);
 
-        evaluate(tc);
+        evaluateNextGen(tc);
 
         tc.nextWriteIdx = tc.startWriteIdx;
 
@@ -151,6 +200,7 @@ namespace NGroupingChallenge {
         std::tie(newFst, newSnd) = fst->cross(*snd, tc.randomEngine, tc.crossAtRange, evaluator);
 
         if (!passToNextGen(newFst, tc)) {
+            delete newSnd;
             return false;
         }
 
@@ -184,10 +234,20 @@ namespace NGroupingChallenge {
         }
     }
 
-    void PopulationManager::evaluate(PopulationThreadContext& tc) {
+    void PopulationManager::evaluateNextGen(PopulationThreadContext& tc) {
         for (int i = tc.startWriteIdx; i < tc.endWriteIdx; ++i) {
             (*nextGenPopulation)[i]->evaluate(evaluator);
         }
+    }
+
+    void PopulationManager::reEvaluateCurrent(PopulationThreadContext& tc) {
+        for (int i = tc.startWriteIdx; i < tc.endWriteIdx; ++i) {
+            (*population)[i]->reEvaluate(evaluator);
+        }
+    }
+
+    std::vector<int> PopulationManager::getBest() const {
+        return best->getGenes();
     }
 
     double PopulationManager::getBestScore() const {
@@ -199,6 +259,8 @@ namespace NGroupingChallenge {
             double score = individual->evaluate(evaluator);
 
             if (score < bestScore) {
+                delete best;
+
                 best = individual->copy();
                 bestScore = score;
             }

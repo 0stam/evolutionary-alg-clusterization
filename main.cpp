@@ -2,40 +2,40 @@
 #include <random>
 #include <tuple>
 
+#include "population/evaluator/FixedEvaluator.h"
 #include "population/individual/Individual.h"
 #include "population/individual/SinglePointCrossingIndividual.h"
 #include "population/mutationstrategy/RandomGeneMutationStrategy.h"
 
 using namespace NGroupingChallenge;
 
-int disabled_main() {
-    /*std::random_device randomDevice;
-    std::mt19937 randomEngine(randomDevice());
+int d_main() {
+    // Create vector of four 2d double coordinates
+    std::vector<std::pair<double, double>> points = {
+            {0, 0},
+            {1, 1},
+            {2, 2},
+            {3, 3}
+    };
 
-    int numberOfPoints = 10;
-    std::uniform_int_distribution<> groupRange(1, 8);
-    std::uniform_int_distribution<> pointIdxRange(0, numberOfPoints - 1);
-    std::uniform_int_distribution<> crossAtRange(1, numberOfPoints - 1);
+    // Create CPoint objects from the vector
+    std::vector<CPoint> cPoints;
+    for (const auto& point : points) {
+        CPoint cPoint;
+        cPoint.vAddCoordinate(point.first);
+        cPoint.vAddCoordinate(point.second);
 
-    SinglePointCrossingIndividual first(numberOfPoints, randomEngine, groupRange);
-    SinglePointCrossingIndividual second(numberOfPoints, randomEngine, groupRange);
+        cPoints.push_back(cPoint);
+    }
 
-    std::cout << first << "\n" << second << "\n";
+    CGroupingEvaluator cGroupingEvaluator(3, cPoints);
+    FixedEvaluator fixedEvaluator(cGroupingEvaluator);
 
-    RandomGeneMutationStrategy mutationStrategy(randomEngine, groupRange, pointIdxRange);
+    double score = fixedEvaluator.evaluate({0, 0, 0, 1});
+    double newScore = fixedEvaluator.calcDiff({0, 1, 0, 1}, score, 1, 0);
+    double newAbsoluteScore = fixedEvaluator.evaluate({0, 1, 0, 1});
 
-    Individual* newFirst;
-    Individual* newSecond;
-
-    std::tie(newFirst, newSecond) = first.cross(second, randomEngine, crossAtRange);
-
-    std::cout << *newFirst << "\n" << *newSecond << "\n";
-
-    delete newFirst;
-    delete newSecond;
-
-    std::vector<int> a(100);
-    std::cout << a.size() << "\n";*/
+    std::cout << newScore << " vs " << newAbsoluteScore << std::endl;
 
     return 0;
 }

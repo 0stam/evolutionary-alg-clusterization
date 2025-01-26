@@ -1,6 +1,7 @@
 #include "Individual.h"
 
 #include <iostream>
+#include <tuple>
 
 namespace NGroupingChallenge {
     Individual::Individual(int numberOfPoints, std::mt19937& randomEngine, std::uniform_int_distribution<>& groupRange)
@@ -40,6 +41,36 @@ namespace NGroupingChallenge {
     void Individual::mutate(MutationStrategy& mutationStrategy) {
         genes = mutationStrategy.mutate(genes);
         genesEvaluated = false;
+    }
+
+    bool Individual::optimize(MutationStrategy& mutationStrategy, AbstractEvaluator& evaluator, int iterations) {
+        std::vector<int> newGenes = genes;
+        double newScore = evaluate(evaluator);
+
+        for (int i = 0; i < iterations; ++i) {
+            int changeIdx;
+            int oldVal;
+
+            std::tie(changeIdx, oldVal) = mutationStrategy.modify(newGenes);
+
+            double prevScore = newScore;
+            newScore = evaluator.calcDiff(newGenes, score, changeIdx, oldVal);
+
+            //std::cout << newScore << " vs " << evaluator.evaluate(newGenes) << std::endl;
+
+            if (newScore > prevScore) {
+                newGenes[changeIdx] = oldVal;
+                newScore = prevScore;
+            }
+        }
+
+        if (newScore < score) {
+            genes = newGenes;
+            score = newScore;
+            return true;
+        }
+
+        return false;
     }
 
     std::string Individual::toString() const {

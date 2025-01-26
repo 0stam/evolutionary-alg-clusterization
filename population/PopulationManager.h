@@ -38,29 +38,21 @@ namespace NGroupingChallenge {
 
     class PopulationManager {
     public:
+        static const int POPULATION_SIZE;
         static const int TOURNAMENT_CANDIDATES;
         static const double CROSS_PROBABILITY;
         static const double MUTATION_PROBABILITY;
         static const int THREAD_COUNT;
+        static const int PREPROCESS_ITERATIONS;
 
-        PopulationManager(CGroupingEvaluator& evaluator, int numberOfPoints, int numberOfGroups, int populationSize);
+        PopulationManager(CGroupingEvaluator& evaluator, int numberOfPoints, int numberOfGroups, int populationSize = POPULATION_SIZE);
         ~PopulationManager();
 
-        void initPopulation();
-        void initThreadContexts();
+        void threadPreprocess(int iterations, PopulationThreadContext& tc);
 
         void iteration();
-        void threadIteration(PopulationThreadContext& tc);
 
-        bool nextAction(PopulationThreadContext& tc);
-
-        bool crossover(Individual* fst, Individual* snd, PopulationThreadContext& tc);
-        bool passForward(Individual* fst, Individual* snd, PopulationThreadContext& tc);
-
-        bool passToNextGen(Individual* individual, PopulationThreadContext& tc);
-
-        void mutate(PopulationThreadContext& tc);
-        void evaluate(PopulationThreadContext& tc);
+        std::vector<int> getBest() const;
 
         double getBestScore() const;
         double updateBestScore();
@@ -74,6 +66,8 @@ namespace NGroupingChallenge {
 
         Individual* best;
         double bestScore;
+
+        bool preprocessing;
 
         AbstractEvaluator& evaluator;
         CGroupingEvaluator& baseEvaluator;
@@ -94,6 +88,25 @@ namespace NGroupingChallenge {
         int populationSize;
 
         int nextWriteIdx;
+
+        void initPopulation();
+        void initThreadContexts();
+
+        void preprocessIteration();
+
+        void geneticIteration();
+        void threadIteration(PopulationThreadContext& tc);
+
+        bool nextAction(PopulationThreadContext& tc);
+
+        bool crossover(Individual* fst, Individual* snd, PopulationThreadContext& tc);
+        bool passForward(Individual* fst, Individual* snd, PopulationThreadContext& tc);
+
+        bool passToNextGen(Individual* individual, PopulationThreadContext& tc);
+
+        void mutate(PopulationThreadContext& tc);
+        void evaluateNextGen(PopulationThreadContext& tc);
+        void reEvaluateCurrent(PopulationThreadContext& tc);
     };
 }
 

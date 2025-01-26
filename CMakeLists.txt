@@ -34,4 +34,7 @@ add_executable(project main.cpp
         population/evaluator/ScoreSavingEvalWrapper.cpp
         population/evaluator/ScoreSavingEvalWrapper.h
         population/threads/ThreadPool.cpp
-        population/threads/ThreadPool.h)
+        population/threads/ThreadPool.h
+        population/exampleloader/CPointLoader.cpp
+        population/exampleloader/CPointLoader.h
+        population/exampleloader/CClusterSaver.h)

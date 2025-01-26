@@ -10,6 +10,7 @@ public:
     virtual ~MutationStrategy() = default;
 
     virtual std::vector<int> mutate(std::vector<int> genes) = 0;
+    virtual std::pair<int, int> modify(std::vector<int>& genes) = 0; // Return modification index and previous value
 };
 
 } // NGroupingChallenge
