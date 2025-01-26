@@ -147,8 +147,17 @@ namespace NGroupingChallenge {
 
         if (bestScore >= previousBestScore) {
             preprocessing = false;
+
             std::cout << "\n\n\nPreprocessing finished\n\n\n" << std::endl;
+
+            for (auto context : threadContexts) {
+                threadPool.enqueue([this, context] { reEvaluateCurrent(*context); });
+            }
+
+            threadPool.join();
         }
+
+        updateBestScore();
     }
 
     void PopulationManager::threadPreprocess(int iterations, PopulationThreadContext& tc) {
