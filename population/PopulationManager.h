@@ -60,6 +60,7 @@ namespace NGroupingChallenge {
         bool passToNextGen(Individual* individual, PopulationThreadContext& tc);
 
         void mutate(PopulationThreadContext& tc);
+        void evaluate(PopulationThreadContext& tc);
 
         double getBestScore() const;
         double updateBestScore();

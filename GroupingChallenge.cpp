@@ -6,20 +6,20 @@ using namespace NGroupingChallenge;
 
 int main()
 {
-	CGaussianGroupingEvaluatorFactory c_evaluator_factory(8, 100, 5);
+	CGaussianGroupingEvaluatorFactory c_evaluator_factory(4, 5000, 5);
 
 	c_evaluator_factory
 		.cAddDimension(-100, 100, 1.0, 1.0)
 		.cAddDimension(-100, 100, 1.0, 1.0)
 		.cAddDimension(-100, 100, 1.0, 1.0);
 
-	CGroupingEvaluator* pc_evaluator = c_evaluator_factory.pcCreateEvaluator(0);
+	CGroupingEvaluator* pc_evaluator = c_evaluator_factory.pcCreateEvaluator(42);
 
 	COptimizer c_optimizer(*pc_evaluator);
 
 	c_optimizer.vInitialize();
 
-	for (int i = 0; i < 10000; i++)
+	for (int i = 0; i < 100000; i++)
 	{
 		c_optimizer.vRunIteration();
 	}

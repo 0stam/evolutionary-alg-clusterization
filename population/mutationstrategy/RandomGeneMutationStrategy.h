@@ -11,7 +11,6 @@ public:
     RandomGeneMutationStrategy(std::mt19937& randomEngine, std::uniform_int_distribution<>& groupRange, std::uniform_int_distribution<>& pointIdxRange);
 
     std::vector<int> mutate(std::vector<int> genes) override;
-    std::string test() override;
 
 private:
     std::mt19937& randomEngine;

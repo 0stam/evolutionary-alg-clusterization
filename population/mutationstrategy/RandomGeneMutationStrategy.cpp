@@ -18,8 +18,4 @@ namespace NGroupingChallenge {
 
         return genes;
     }
-
-    std::string RandomGeneMutationStrategy::test() {
-        return "works";
-    }
 } // NGroupingChallenge

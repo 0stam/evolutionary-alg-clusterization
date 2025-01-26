@@ -11,9 +11,9 @@
 
 namespace NGroupingChallenge {
     const int PopulationManager::TOURNAMENT_CANDIDATES = 1;
-    const double PopulationManager::CROSS_PROBABILITY = 0.7;
-    const double PopulationManager::MUTATION_PROBABILITY = 0.05;
-    const int PopulationManager::THREAD_COUNT = 1;
+    const double PopulationManager::CROSS_PROBABILITY = 0.8;
+    const double PopulationManager::MUTATION_PROBABILITY = 0.1;
+    const int PopulationManager::THREAD_COUNT = 8;
 
     PopulationThreadContext::PopulationThreadContext(int startWriteIdx, int endWriteIdx, std::uniform_int_distribution<>& groupRange,
         std::uniform_int_distribution<>& crossAtRange, std::uniform_int_distribution<>& pointIdxRange,
@@ -124,6 +124,8 @@ namespace NGroupingChallenge {
         tc.nextWriteIdx = tc.startWriteIdx;
         mutate(tc);
 
+        evaluate(tc);
+
         tc.nextWriteIdx = tc.startWriteIdx;
 
         //std::cout << "Thread finished" << std::endl;
@@ -168,8 +170,6 @@ namespace NGroupingChallenge {
 
         (*nextGenPopulation)[tc.nextWriteIdx] = individual;
 
-        updateBestScore();
-
         return ++tc.nextWriteIdx < tc.endWriteIdx;
     }
 
@@ -181,6 +181,12 @@ namespace NGroupingChallenge {
             int idx = tc.individualThreadIDRange(tc.randomEngine);
 
             (*nextGenPopulation)[idx]->mutate(*tc.mutationStrategy);
+        }
+    }
+
+    void PopulationManager::evaluate(PopulationThreadContext& tc) {
+        for (int i = tc.startWriteIdx; i < tc.endWriteIdx; ++i) {
+            (*nextGenPopulation)[i]->evaluate(evaluator);
         }
     }
 

@@ -1,5 +1,7 @@
 #include "Optimizer.h"
 
+#include <iomanip>
+
 using namespace NGroupingChallenge;
 
 COptimizer::COptimizer(CGroupingEvaluator& cEvaluator)
@@ -47,5 +49,5 @@ void COptimizer::vRunIteration()
 
 	populationManager->iteration();
 
-	std::cout << populationManager->getBestScore() << std::endl;
+	std::cout << std::setprecision(15) << populationManager->getBestScore() << "\n";
 }
