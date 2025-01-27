@@ -23,6 +23,9 @@ namespace NGroupingChallenge {
         int nextWriteIdx;
         int startWriteIdx; // Inclusive
         int endWriteIdx; // Exclusive
+
+        bool preprocessing;
+
         std::mt19937 randomEngine;
         std::uniform_int_distribution<> groupRange;
         std::uniform_int_distribution<> crossAtRange;

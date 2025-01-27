@@ -11,12 +11,12 @@
 #include "selectionstrategy/TournamentSelectionStrategy.h"
 
 namespace NGroupingChallenge {
-    const int PopulationManager::POPULATION_SIZE = 16;
+    const int PopulationManager::POPULATION_SIZE = 24;
     const int PopulationManager::TOURNAMENT_CANDIDATES = 1;
     const double PopulationManager::CROSS_PROBABILITY = 0.8;
     const double PopulationManager::MUTATION_PROBABILITY = 0.05;
-    const int PopulationManager::THREAD_COUNT = 8;
-    const int PopulationManager::PREPROCESS_ITERATIONS = 100;
+    const int PopulationManager::THREAD_COUNT = 12;
+    const int PopulationManager::PREPROCESS_ITERATIONS = 1000;
 
     PopulationThreadContext::PopulationThreadContext(int startWriteIdx, int endWriteIdx, std::uniform_int_distribution<>& groupRange,
         std::uniform_int_distribution<>& crossAtRange, std::uniform_int_distribution<>& pointIdxRange,
@@ -24,6 +24,7 @@ namespace NGroupingChallenge {
             : nextWriteIdx(startWriteIdx)
             , startWriteIdx(startWriteIdx)
             , endWriteIdx(endWriteIdx)
+            , preprocessing(true)
             , groupRange(groupRange)
             , crossAtRange(crossAtRange)
             , pointIdxRange(pointIdxRange)
@@ -135,8 +136,7 @@ namespace NGroupingChallenge {
 
 
     void PopulationManager::preprocessIteration() {
-        double previousBestScore = bestScore;
-
+        std::cout << "Preprocessing" << "\n";
         for (auto context : threadContexts) {
             threadPool.enqueue([this, context] { threadPreprocess(PREPROCESS_ITERATIONS, *context); });
         }
@@ -145,7 +145,16 @@ namespace NGroupingChallenge {
 
         updateBestScore();
 
-        if (bestScore >= previousBestScore) {
+        preprocessing = false;
+
+        for (auto context : threadContexts) {
+            preprocessing |= context->preprocessing;
+        }
+
+        if (!preprocessing) {
+            std::string temp;
+            std::cin >> temp;
+
             preprocessing = false;
 
             std::cout << "\n\n\nPreprocessing finished\n\n\n" << std::endl;
@@ -161,8 +170,10 @@ namespace NGroupingChallenge {
     }
 
     void PopulationManager::threadPreprocess(int iterations, PopulationThreadContext& tc) {
+        tc.preprocessing = false;
+
         for (int i = tc.startWriteIdx; i < tc.endWriteIdx; ++i) {
-            (*population)[i]->optimize(*tc.mutationStrategy, evaluator, iterations);
+            tc.preprocessing |= (*population)[i]->optimize(*tc.mutationStrategy, evaluator, iterations);
         }
 
         //reEvaluateCurrent(tc);

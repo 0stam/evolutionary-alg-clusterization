@@ -73,6 +73,10 @@ namespace NGroupingChallenge {
         return false;
     }
 
+    void Individual::normalize(const std::vector<int>& otherGenes) {
+        
+    }
+
     std::string Individual::toString() const {
         std::string result;
 

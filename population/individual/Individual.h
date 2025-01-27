@@ -21,6 +21,7 @@ public:
     virtual std::pair<Individual*, Individual*> cross(const Individual& other, std::mt19937& randomEngine, std::uniform_int_distribution<>& crossAtRange, AbstractEvaluator& evaluator) const;  // Default implementation, should be changed in subclasses
     void mutate(MutationStrategy& mutationStrategy);
     bool optimize(MutationStrategy& mutationStrategy, AbstractEvaluator& evaluator, int iterations);
+    void normalize(const std::vector<int>& otherGenes);
 
     const std::vector<int>& getGenes() const;
     void setGenes(const std::vector<int>& genes);

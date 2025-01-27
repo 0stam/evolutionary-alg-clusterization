@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/home/rs/CLionProjects/project/cmake-build-debug",
-		"source" : "/home/rs/CLionProjects/project"
+		"build" : "/home/rs/CLionProjects/tep-konkurs/cmake-build-debug",
+		"source" : "/home/rs/CLionProjects/tep-konkurs"
 	},
 	"version" : 
 	{
