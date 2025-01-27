@@ -5,17 +5,16 @@
 #include <iostream>
 
 #include "evaluator/FixedEvaluator.h"
-#include "exampleloader/CClusterSaver.h"
 #include "individual/SinglePointCrossingIndividual.h"
 #include "mutationstrategy/RandomGeneMutationStrategy.h"
 #include "selectionstrategy/TournamentSelectionStrategy.h"
 
 namespace NGroupingChallenge {
-    const int PopulationManager::POPULATION_SIZE = 8;
+    const int PopulationManager::POPULATION_SIZE = 13;
     const int PopulationManager::TOURNAMENT_CANDIDATES = 1;
     const double PopulationManager::CROSS_PROBABILITY = 0.8;
     const double PopulationManager::MUTATION_PROBABILITY = 0.0005;
-    const int PopulationManager::THREAD_COUNT = 8;
+    const int PopulationManager::THREAD_COUNT = 13;
     const int PopulationManager::PREPROCESS_ITERATIONS = 1000;
 
     PopulationThreadContext::PopulationThreadContext(int startWriteIdx, int endWriteIdx, std::uniform_int_distribution<>& groupRange,
@@ -167,7 +166,6 @@ namespace NGroupingChallenge {
 
 
     void PopulationManager::preprocessIteration() {
-        std::cout << "Preprocessing" << "\n";
         for (auto context : threadContexts) {
             threadPool.enqueue([this, context] { threadPreprocess(PREPROCESS_ITERATIONS, *context); });
         }
@@ -183,12 +181,7 @@ namespace NGroupingChallenge {
         }
 
         if (!preprocessing) {
-            std::string temp;
-            std::cin >> temp;
-
             preprocessing = false;
-
-            std::cout << "\n\n\nPreprocessing finished\n\n\n" << std::endl;
 
             for (auto context : threadContexts) {
                 threadPool.enqueue([this, context] { reEvaluateCurrent(*context); });

@@ -3,7 +3,7 @@ project(project)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(project main.cpp
+add_executable(project
         GaussianGroupingEvaluatorFactory.cpp
         GaussianGroupingEvaluatorFactory.h
         GroupingChallenge.cpp
@@ -35,6 +35,4 @@ add_executable(project main.cpp
         population/evaluator/ScoreSavingEvalWrapper.h
         population/threads/ThreadPool.cpp
         population/threads/ThreadPool.h
-        population/exampleloader/CPointLoader.cpp
-        population/exampleloader/CPointLoader.h
-        population/exampleloader/CClusterSaver.h)
+)
