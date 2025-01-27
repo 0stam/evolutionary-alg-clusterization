@@ -3,7 +3,6 @@
 #include <random>
 #include <vector>
 
-#include "../../GroupingEvaluator.h"
 #include "../evaluator/AbstractEvaluator.h"
 #include "../mutationstrategy/MutationStrategy.h"
 
@@ -18,12 +17,13 @@ public:
 
     double evaluate(AbstractEvaluator& evaluator);
     double reEvaluate(AbstractEvaluator& evaluator);
-    virtual std::pair<Individual*, Individual*> cross(const Individual& other, std::mt19937& randomEngine, std::uniform_int_distribution<>& crossAtRange, AbstractEvaluator& evaluator) const;  // Default implementation, should be changed in subclasses
+    void requireEval();
+    virtual std::pair<Individual*, Individual*> cross(Individual& other, std::mt19937& randomEngine, std::uniform_int_distribution<>& crossAtRange, AbstractEvaluator& evaluator) const;  // Default implementation, should be changed in subclasses
     void mutate(MutationStrategy& mutationStrategy);
     bool optimize(MutationStrategy& mutationStrategy, AbstractEvaluator& evaluator, int iterations);
-    void normalize(const std::vector<int>& otherGenes);
+    void normalize(const std::vector<int>& otherGenes, int numberOfGroups);
 
-    const std::vector<int>& getGenes() const;
+    std::vector<int>& getGenes(); // Make const after competition :P
     void setGenes(const std::vector<int>& genes);
 
     std::string toString() const;

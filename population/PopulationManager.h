@@ -93,7 +93,10 @@ namespace NGroupingChallenge {
         int nextWriteIdx;
 
         void initPopulation();
+        void initPopulationChunk(PopulationThreadContext& tc);
         void initThreadContexts();
+
+        void expandPopulation(int times);
 
         void preprocessIteration();
 
@@ -110,6 +113,7 @@ namespace NGroupingChallenge {
         void mutate(PopulationThreadContext& tc);
         void evaluateNextGen(PopulationThreadContext& tc);
         void reEvaluateCurrent(PopulationThreadContext& tc);
+        void normalize(Individual* individual, PopulationThreadContext& tc);
     };
 }
 

@@ -33,8 +33,12 @@ namespace NGroupingChallenge {
         return score;
     }
 
+    void Individual::requireEval() {
+        genesEvaluated = false;
+    }
+
     // Placeholder implementation, override in children classes
-    std::pair<Individual*, Individual*> Individual::cross(const Individual& other, std::mt19937& randomEngine, std::uniform_int_distribution<>& crossAtRange, AbstractEvaluator& evaluator) const {
+    std::pair<Individual*, Individual*> Individual::cross(Individual& other, std::mt19937& randomEngine, std::uniform_int_distribution<>& crossAtRange, AbstractEvaluator& evaluator) const {
         return {this->copy(), other.copy()};
     }
 
@@ -73,8 +77,54 @@ namespace NGroupingChallenge {
         return false;
     }
 
-    void Individual::normalize(const std::vector<int>& otherGenes) {
-        
+    void Individual::normalize(const std::vector<int>& otherGenes, int numberOfGroups) {
+        int counts[numberOfGroups + 1][numberOfGroups + 1];
+        int mapTo[numberOfGroups + 1]; // idx: this group, value: other group
+
+        for (int i = 0; i < numberOfGroups + 1; ++i) {
+            for (int j = 0; j < numberOfGroups + 1; ++j) {
+                counts[i][j] = 0;
+            }
+        }
+
+        for (int i = 0; i < numberOfGroups + 1; ++i) {
+            mapTo[i] = -1;
+        }
+
+        for (int i = 0; i < genes.size(); ++i) {
+            counts[genes[i]][otherGenes[i]]++;
+        }
+
+        for (int i = 1; i < numberOfGroups + 1; ++i) {
+            int maxIdx = -1;
+            int maxCount = -1;
+
+            for (int j = 1; j < numberOfGroups + 1; ++j) {
+                if (counts[i][j] > maxCount) {
+                    bool alreadyMapped = false;
+
+                    for (int k = 1; k < numberOfGroups + 1; ++k) {
+                        if (mapTo[k] == j) {
+                            alreadyMapped = true;
+                            break;
+                        }
+                    }
+
+                    if (!alreadyMapped) {
+                        maxCount = counts[i][j];
+                        maxIdx = j;
+                    }
+                }
+            }
+
+            mapTo[i] = maxIdx;
+        }
+
+        for (int& gene : genes) {
+            gene = mapTo[gene];
+        }
+
+        genesEvaluated = false;
     }
 
     std::string Individual::toString() const {
@@ -87,7 +137,7 @@ namespace NGroupingChallenge {
         return result;
     }
 
-    const std::vector<int>& Individual::getGenes() const {
+    std::vector<int>& Individual::getGenes() {
         return genes;
     }
 

@@ -10,7 +10,7 @@ public:
 
     Individual* copy() const override;
 
-    std::pair<Individual*, Individual*> cross(const Individual& other, std::mt19937& randomEngine, std::uniform_int_distribution<>& crossAtRange, AbstractEvaluator& evaluator) const override;
+    std::pair<Individual*, Individual*> cross(Individual& other, std::mt19937& randomEngine, std::uniform_int_distribution<>& crossAtRange, AbstractEvaluator& evaluator) const override;
 };
 
 } // NGroupingChallenge
