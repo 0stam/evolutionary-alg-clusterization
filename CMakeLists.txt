@@ -31,10 +31,10 @@ add_executable(project main.cpp
         population/evaluator/FixedEvaluator.h
         population/evaluator/AbstractEvaluator.cpp
         population/evaluator/AbstractEvaluator.h
-        population/evaluator/ScoreSavingEvalWrapper.cpp
-        population/evaluator/ScoreSavingEvalWrapper.h
         population/threads/ThreadPool.cpp
         population/threads/ThreadPool.h
         population/exampleloader/CPointLoader.cpp
         population/exampleloader/CPointLoader.h
-        population/exampleloader/CClusterSaver.h)
+        population/exampleloader/CClusterSaver.h
+        population/individual/KMIndividual.cpp
+        population/individual/KMIndividual.h)

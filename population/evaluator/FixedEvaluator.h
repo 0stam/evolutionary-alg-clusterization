@@ -14,8 +14,7 @@ public:
     double evaluate(std::vector<int> solution) override;
     double calcDiff(std::vector<int> solution, double prevScore, int changeIdx, int prevVal) override;
 
-protected:
-    double distanceBetween(int fstPointIdx, int sndPointIdx);
+    double distanceBetween(int fstPointIdx, int sndPointIdx) override;
 
 private:
     const std::vector<CPoint>& points;

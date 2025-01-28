@@ -6,6 +6,7 @@ namespace NGroupingChallenge {
 
 class SinglePointCrossingIndividual : public Individual {
 public:
+    explicit SinglePointCrossingIndividual(int numberOfPoints);
     SinglePointCrossingIndividual(int numberOfPoints, std::mt19937& randomEngine, std::uniform_int_distribution<>& groupRange);
 
     Individual* copy() const override;

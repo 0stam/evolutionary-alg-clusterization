@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "../GroupingEvaluator.h"
-#include "evaluator/ScoreSavingEvalWrapper.h"
 #include "individual/Individual.h"
 #include "selectionstrategy/SelectionStrategy.h"
 #include "threads/ThreadPool.h"
@@ -111,6 +110,7 @@ namespace NGroupingChallenge {
         bool passToNextGen(Individual* individual, PopulationThreadContext& tc);
 
         void mutate(PopulationThreadContext& tc);
+        void evaluateCurrGen(PopulationThreadContext& tc);
         void evaluateNextGen(PopulationThreadContext& tc);
         void reEvaluateCurrent(PopulationThreadContext& tc);
         void normalize(Individual* individual, PopulationThreadContext& tc);

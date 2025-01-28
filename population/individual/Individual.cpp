@@ -4,6 +4,12 @@
 #include <tuple>
 
 namespace NGroupingChallenge {
+    Individual::Individual(int numberOfPoints)
+        : genes(numberOfPoints)
+        , score(-1)
+        , genesEvaluated(false)
+    {}
+
     Individual::Individual(int numberOfPoints, std::mt19937& randomEngine, std::uniform_int_distribution<>& groupRange)
         : genes(numberOfPoints)
         , score(-1)
@@ -123,8 +129,6 @@ namespace NGroupingChallenge {
         for (int& gene : genes) {
             gene = mapTo[gene];
         }
-
-        genesEvaluated = false;
     }
 
     std::string Individual::toString() const {

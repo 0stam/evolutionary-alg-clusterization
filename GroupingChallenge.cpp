@@ -8,17 +8,17 @@ using namespace NGroupingChallenge;
 
 int main()
 {
-	CGaussianGroupingEvaluatorFactory c_evaluator_factory(4, 50, 5);
+	CGaussianGroupingEvaluatorFactory c_evaluator_factory(4, 5000, 4);
 
 	c_evaluator_factory
 		.cAddDimension(-100, 100, 1.0, 1.0)
 		.cAddDimension(-100, 100, 1.0, 1.0)
 		.cAddDimension(-100, 100, 1.0, 1.0);
 
-	std::vector<CPoint> points = CPointLoader::vLoadPointsFromCSV("/home/rs/CLionProjects/project/data/birch-rg3.csv");
+	std::vector<CPoint> points = CPointLoader::vLoadPointsFromCSV("/home/rs/CLionProjects/project/data/finland-shuff.csv");
 
 	//CGroupingEvaluator* pc_evaluator = c_evaluator_factory.pcCreateEvaluator(42);
-	CGroupingEvaluator* pc_evaluator = new CGroupingEvaluator(3, points);
+	CGroupingEvaluator* pc_evaluator = new CGroupingEvaluator(2, points);
 
 	COptimizer c_optimizer(*pc_evaluator);
 

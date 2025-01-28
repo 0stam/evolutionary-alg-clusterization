@@ -7,6 +7,10 @@
 #include <algorithm>
 
 namespace NGroupingChallenge {
+    SinglePointCrossingIndividual::SinglePointCrossingIndividual(int numberOfPoints)
+        : Individual(numberOfPoints)
+    {}
+
     SinglePointCrossingIndividual::SinglePointCrossingIndividual(int numberOfPoints, std::mt19937& randomEngine, std::uniform_int_distribution<>& groupRange)
         : Individual(numberOfPoints, randomEngine, groupRange)
     {}

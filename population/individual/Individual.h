@@ -10,6 +10,7 @@ namespace NGroupingChallenge {
 
 class Individual {
 public:
+    explicit Individual(int numberOfPoints);
     Individual(int numberOfPoints, std::mt19937& randomEngine, std::uniform_int_distribution<>& groupRange);
     virtual ~Individual() = default;
 
