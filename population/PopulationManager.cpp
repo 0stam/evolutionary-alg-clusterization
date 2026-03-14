@@ -12,11 +12,11 @@
 #include "selectionstrategy/TournamentSelectionStrategy.h"
 
 namespace NGroupingChallenge {
-    const int PopulationManager::POPULATION_SIZE = 6;
+    const int PopulationManager::POPULATION_SIZE = 16;
     const int PopulationManager::TOURNAMENT_CANDIDATES = 2;
     const double PopulationManager::CROSS_PROBABILITY = 0.8;
     const double PopulationManager::MUTATION_PROBABILITY = 0.0005;
-    const int PopulationManager::THREAD_COUNT = 3;
+    const int PopulationManager::THREAD_COUNT = 8;
     const int PopulationManager::PREPROCESS_ITERATIONS = 1000;
 
     PopulationThreadContext::PopulationThreadContext(int startWriteIdx, int endWriteIdx, std::uniform_int_distribution<>& groupRange,

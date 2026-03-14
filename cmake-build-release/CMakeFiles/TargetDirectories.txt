@@ -1,3 +1,0 @@
-/home/rs/CLionProjects/project/cmake-build-release/CMakeFiles/project.dir
-/home/rs/CLionProjects/project/cmake-build-release/CMakeFiles/edit_cache.dir
-/home/rs/CLionProjects/project/cmake-build-release/CMakeFiles/rebuild_cache.dir

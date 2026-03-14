@@ -15,21 +15,21 @@ int main()
 		.cAddDimension(-100, 100, 1.0, 1.0)
 		.cAddDimension(-100, 100, 1.0, 1.0);
 
-	std::vector<CPoint> points = CPointLoader::vLoadPointsFromCSV("/home/rs/CLionProjects/project/data/finland-shuff.csv");
+	std::vector<CPoint> points = CPointLoader::vLoadPointsFromCSV("../data/cluto-shuff.csv");
 
 	//CGroupingEvaluator* pc_evaluator = c_evaluator_factory.pcCreateEvaluator(42);
-	CGroupingEvaluator* pc_evaluator = new CGroupingEvaluator(2, points);
+	CGroupingEvaluator* pc_evaluator = new CGroupingEvaluator(4, points);
 
 	COptimizer c_optimizer(*pc_evaluator);
 
 	c_optimizer.vInitialize();
 
-	CClusterSaver::vSaveClustersToCSV(*c_optimizer.pvGetCurrentBest(), "/home/rs/CLionProjects/project/data/result.txt");
+	CClusterSaver::vSaveClustersToCSV(*c_optimizer.pvGetCurrentBest(), "../data/result.txt");
 
     while (true)
 	{
 		c_optimizer.vRunIteration();
-		CClusterSaver::vSaveClustersToCSV(*c_optimizer.pvGetCurrentBest(), "/home/rs/CLionProjects/project/data/result.txt");
+		CClusterSaver::vSaveClustersToCSV(*c_optimizer.pvGetCurrentBest(), "../data/result.txt");
 	}
 
 	delete pc_evaluator;
